@@ -1,0 +1,4 @@
+/* Reset App.css to minimal - all styles in index.css */
+#root {
+  height: 100vh;
+}
