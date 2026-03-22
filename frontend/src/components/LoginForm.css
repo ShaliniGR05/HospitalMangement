@@ -1,47 +1,59 @@
 .login-form {
   display: grid;
-  gap: 0.7rem;
+  gap: var(--space-md);
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
 }
 
 .field-label {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--ink-soft);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--ink);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
 }
 
 .login-form input {
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: #fff;
-  padding: 0.65rem 0.8rem;
-  font-size: 0.95rem;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.9);
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  color: var(--ink-darkest);
+  transition: all var(--transition-fast);
+  font-family: var(--body-font);
+}
+
+.login-form input:hover {
+  border-color: var(--primary-dark);
 }
 
 .login-form input:focus {
-  outline: 2px solid rgba(20, 111, 138, 0.28);
-  outline-offset: 1px;
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
+  background: #fff;
 }
 
 .form-error {
-  margin: 0.1rem 0;
-  color: #b42318;
+  margin: 0;
+  color: var(--danger);
   font-size: 0.85rem;
-}
-
-.primary-button {
-  margin-top: 0.4rem;
-  border: none;
-  border-radius: 10px;
-  padding: 0.7rem 0.9rem;
   font-weight: 600;
-  color: #fff;
-  background: linear-gradient(135deg, #146f8a, #1f8d8e);
-  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  background: rgba(239, 68, 68, 0.1);
+  border-radius: var(--radius-md);
 }
 
-.primary-button:disabled {
-  opacity: 0.65;
-  cursor: not-allowed;
+.login-form .primary-button {
+  margin-top: var(--space-sm);
+  padding: 0.85rem;
+  font-size: 1rem;
 }

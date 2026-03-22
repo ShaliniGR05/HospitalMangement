@@ -83,31 +83,55 @@ function StaffPatients({ token }) {
 
       <form className="entity-form" onSubmit={handleSubmit}>
         <h3>Add Patient</h3>
-        <input
-          name="patient_name"
-          placeholder="Patient name"
-          value={form.patient_name}
-          onChange={handleChange}
-          required
-        />
-        <input name="gender" placeholder="Gender" value={form.gender} onChange={handleChange} />
-        <input name="age" type="number" placeholder="Age" value={form.age} onChange={handleChange} />
-        <input name="phone_num" placeholder="Phone" value={form.phone_num} onChange={handleChange} />
-        <input name="blood_group" placeholder="Blood group" value={form.blood_group} onChange={handleChange} />
-        <input
-          name="registration_date"
-          type="date"
-          placeholder="Registration date"
-          value={form.registration_date}
-          onChange={handleChange}
-        />
-        <textarea
-          name="address"
-          placeholder="Address"
-          rows={2}
-          value={form.address}
-          onChange={handleChange}
-        />
+        <div className="input-group">
+          <label className="field-label" htmlFor="patient_name">Patient name</label>
+          <input
+            id="patient_name"
+            name="patient_name"
+            placeholder="Patient name"
+            value={form.patient_name}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="input-group">
+          <label className="field-label" htmlFor="gender">Gender</label>
+          <input id="gender" name="gender" placeholder="Gender" value={form.gender} onChange={handleChange} />
+        </div>
+        <div className="input-group">
+          <label className="field-label" htmlFor="age">Age</label>
+          <input id="age" name="age" type="number" placeholder="Age" value={form.age} onChange={handleChange} />
+        </div>
+        <div className="input-group">
+          <label className="field-label" htmlFor="phone_num">Phone</label>
+          <input id="phone_num" name="phone_num" placeholder="Phone" value={form.phone_num} onChange={handleChange} />
+        </div>
+        <div className="input-group">
+          <label className="field-label" htmlFor="blood_group">Blood group</label>
+          <input id="blood_group" name="blood_group" placeholder="Blood group" value={form.blood_group} onChange={handleChange} />
+        </div>
+        <div className="input-group">
+          <label className="field-label" htmlFor="registration_date">Registration date</label>
+          <input
+            id="registration_date"
+            name="registration_date"
+            type="date"
+            placeholder="Registration date"
+            value={form.registration_date}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="input-group">
+          <label className="field-label" htmlFor="address">Address</label>
+          <textarea
+            id="address"
+            name="address"
+            placeholder="Address"
+            rows={2}
+            value={form.address}
+            onChange={handleChange}
+          />
+        </div>
         <button type="submit" disabled={isSaving}>
           {isSaving ? "Adding..." : "Add Patient"}
         </button>

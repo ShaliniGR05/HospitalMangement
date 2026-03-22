@@ -2,25 +2,50 @@
   min-height: 100vh;
   display: grid;
   place-items: center;
-  padding: 1rem;
+  padding: var(--space-xl);
 }
 
 .access-card {
-  width: min(460px, 100%);
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 1rem;
-  background: #fff;
+  width: min(440px, 100%);
+  background: var(--surface-color);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  box-shadow: var(--shadow-glass);
+  text-align: center;
+  animation: fadeInSlideUp var(--transition-normal);
 }
 
 .access-card h1 {
   margin-top: 0;
+  font-size: 1.8rem;
+  color: var(--danger);
+  margin-bottom: var(--space-md);
+}
+
+.access-card p {
+  color: var(--ink-soft);
+  margin-bottom: var(--space-lg);
+  font-size: 0.95rem;
+  line-height: 1.5;
 }
 
 .access-card button {
-  border: 1px solid var(--line);
-  border-radius: 9px;
-  padding: 0.45rem 0.7rem;
-  background: #fff;
+  background: var(--primary);
+  color: white;
+  border: none;
+  font-family: var(--body-font);
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1.5rem;
   cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.access-card button:hover {
+  background: var(--primary-dark);
+  box-shadow: 0 4px 6px -1px rgba(14, 165, 233, 0.3);
+  transform: translateY(-2px);
 }

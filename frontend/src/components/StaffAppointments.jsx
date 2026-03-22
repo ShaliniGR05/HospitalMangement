@@ -92,49 +92,73 @@ function StaffAppointments({ token }) {
 
       <form className="entity-form" onSubmit={handleSubmit}>
         <h3>Add Appointment</h3>
-        <input
-          name="patient_id"
-          type="number"
-          placeholder="patient_id"
-          value={form.patient_id}
-          onChange={handleChange}
-          required
-        />
-        <input
-          name="doctor_id"
-          type="number"
-          placeholder="doctor_id"
-          value={form.doctor_id}
-          onChange={handleChange}
-          required
-        />
-        <input
-          name="dept_id"
-          type="number"
-          placeholder="dept_id"
-          value={form.dept_id}
-          onChange={handleChange}
-        />
-        <input
-          name="appointment_date"
-          type="date"
-          value={form.appointment_date}
-          onChange={handleChange}
-          required
-        />
-        <input
-          name="appointment_time"
-          type="time"
-          value={form.appointment_time}
-          onChange={handleChange}
-          required
-        />
-        <input
-          name="status"
-          placeholder="Status (optional)"
-          value={form.status}
-          onChange={handleChange}
-        />
+        <div className="input-group">
+          <label className="field-label" htmlFor="patient_id">patient_id</label>
+          <input
+            id="patient_id"
+            name="patient_id"
+            type="number"
+            placeholder="patient_id"
+            value={form.patient_id}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="input-group">
+          <label className="field-label" htmlFor="doctor_id">doctor_id</label>
+          <input
+            id="doctor_id"
+            name="doctor_id"
+            type="number"
+            placeholder="doctor_id"
+            value={form.doctor_id}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="input-group">
+          <label className="field-label" htmlFor="dept_id">dept_id</label>
+          <input
+            id="dept_id"
+            name="dept_id"
+            type="number"
+            placeholder="dept_id"
+            value={form.dept_id}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="input-group">
+          <label className="field-label" htmlFor="appointment_date">Appointment Date</label>
+          <input
+            id="appointment_date"
+            name="appointment_date"
+            type="date"
+            value={form.appointment_date}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="input-group">
+          <label className="field-label" htmlFor="appointment_time">Appointment Time</label>
+          <input
+            id="appointment_time"
+            name="appointment_time"
+            type="time"
+            value={form.appointment_time}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="input-group">
+          <label className="field-label" htmlFor="status">Status</label>
+          <input
+            id="status"
+            name="status"
+            placeholder="Status (optional)"
+            value={form.status}
+            onChange={handleChange}
+          />
+        </div>
         <button type="submit" disabled={isSaving}>
           {isSaving ? "Adding..." : "Add Appointment"}
         </button>

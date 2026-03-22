@@ -16,31 +16,35 @@ function LoginForm({ onLogin, isLoading, error }) {
 
   return (
     <form className="login-form" onSubmit={handleSubmit}>
-      <label className="field-label" htmlFor="user_name">
-        Username
-      </label>
-      <input
-        id="user_name"
-        name="user_name"
-        type="text"
-        value={form.user_name}
-        onChange={handleChange}
-        required
-        autoComplete="username"
-      />
+      <div className="input-group">
+        <label className="field-label" htmlFor="user_name">
+          Username
+        </label>
+        <input
+          id="user_name"
+          name="user_name"
+          type="text"
+          value={form.user_name}
+          onChange={handleChange}
+          required
+          autoComplete="username"
+        />
+      </div>
 
-      <label className="field-label" htmlFor="password">
-        Password
-      </label>
-      <input
-        id="password"
-        name="password"
-        type="password"
-        value={form.password}
-        onChange={handleChange}
-        required
-        autoComplete="current-password"
-      />
+      <div className="input-group">
+        <label className="field-label" htmlFor="password">
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          value={form.password}
+          onChange={handleChange}
+          required
+          autoComplete="current-password"
+        />
+      </div>
 
       {error ? <p className="form-error">{error}</p> : null}
 

@@ -74,40 +74,57 @@ function normalizeCellValue(value) {
 function FieldInput({ field, value, onChange }) {
   if (field.type === "select") {
     return (
-      <select name={field.name} value={value} onChange={onChange} required={field.required}>
-        <option value="">Select...</option>
-        {field.options.map((option) => (
-          <option key={option} value={option}>
-            {option}
-          </option>
-        ))}
-      </select>
+      <div className="input-group">
+        <label className="field-label" htmlFor={field.name}>
+          {field.label || field.name}
+        </label>
+        <select id={field.name} name={field.name} value={value} onChange={onChange} required={field.required}>
+          <option value="">Select...</option>
+          {field.options.map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+      </div>
     );
   }
 
   if (field.type === "textarea") {
     return (
-      <textarea
-        name={field.name}
-        rows={2}
-        value={value}
-        onChange={onChange}
-        placeholder={field.label}
-        required={field.required}
-      />
+      <div className="input-group">
+        <label className="field-label" htmlFor={field.name}>
+          {field.label || field.name}
+        </label>
+        <textarea
+          id={field.name}
+          name={field.name}
+          rows={2}
+          value={value}
+          onChange={onChange}
+          placeholder={field.label}
+          required={field.required}
+        />
+      </div>
     );
   }
 
   return (
-    <input
-      name={field.name}
-      type={field.type || "text"}
-      value={value}
-      onChange={onChange}
-      placeholder={field.label}
-      required={field.required}
-      step={field.type === "number" ? "any" : undefined}
-    />
+    <div className="input-group">
+      <label className="field-label" htmlFor={field.name}>
+        {field.label || field.name}
+      </label>
+      <input
+        id={field.name}
+        name={field.name}
+        type={field.type || "text"}
+        value={value}
+        onChange={onChange}
+        placeholder={field.label}
+        required={field.required}
+        step={field.type === "number" ? "any" : undefined}
+      />
+    </div>
   );
 }
 
