@@ -1,0 +1,36 @@
+.login-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 1.2rem;
+}
+
+.login-card {
+  width: min(420px, 100%);
+  background: #f9fbfa;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 1.4rem;
+  box-shadow: 0 16px 42px rgba(18, 55, 70, 0.08);
+}
+
+.kicker {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  font-size: 0.75rem;
+  color: #146f8a;
+  font-weight: 700;
+}
+
+.login-card h1 {
+  margin: 0.25rem 0 0.25rem;
+  font-size: 1.8rem;
+  font-family: var(--heading-font);
+}
+
+.intro {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: var(--ink-soft);
+}

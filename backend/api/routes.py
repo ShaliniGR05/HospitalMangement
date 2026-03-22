@@ -70,11 +70,27 @@ def _deny_forbidden(message: str = "Insufficient permissions"):
     raise HTTPException(status_code=403, detail=message)
 
 
+def _normalized_role(current_user) -> str:
+    return str(getattr(current_user, "role", "")).strip().lower()
+
+
 def _get_staff_department_id(db: Session, current_user) -> int | None:
     staff_id = getattr(current_user, "staff_id", None)
     if not staff_id:
         return None
     staff = crud.get_item_by_id(db, Staff, staff_id)
+    if staff is None:
+        return None
+    return staff.dept_id
+
+
+def _get_doctor_department_id(db: Session, doctor_id: int | None) -> int | None:
+    if not doctor_id:
+        return None
+    doctor = crud.get_item_by_id(db, Doctor, doctor_id)
+    if doctor is None:
+        return None
+    staff = crud.get_item_by_id(db, Staff, doctor.staff_id)
     if staff is None:
         return None
     return staff.dept_id
@@ -86,12 +102,13 @@ def _query_item_by_id(query, model: type, item_id: int):
 
 
 def _build_scoped_query(db: Session, model: type, current_user):
-    role = getattr(current_user, "role", None)
-    if role == "Admin":
+    role = _normalized_role(current_user)
+    if role == "admin":
         return db.query(model)
 
-    if role == "Doctor":
+    if role == "doctor":
         doctor_id = getattr(current_user, "doctor_id", None)
+        doctor_dept_id = _get_doctor_department_id(db, doctor_id)
         if model is Patient:
             if not doctor_id:
                 return db.query(Patient).filter(false())
@@ -104,7 +121,10 @@ def _build_scoped_query(db: Session, model: type, current_user):
         if model is Appointment:
             if not doctor_id:
                 return db.query(Appointment).filter(false())
-            return db.query(Appointment).filter(Appointment.doctor_id == doctor_id)
+            query = db.query(Appointment).filter(Appointment.doctor_id == doctor_id)
+            if doctor_dept_id is not None:
+                query = query.filter(Appointment.dept_id == doctor_dept_id)
+            return query
         if model is ConsultationBilling:
             if not doctor_id:
                 return db.query(ConsultationBilling).filter(false())
@@ -142,17 +162,11 @@ def _build_scoped_query(db: Session, model: type, current_user):
             return db.query(model)
         return db.query(model).filter(false())
 
-    if role == "Staff":
+    if role == "staff":
         staff_dept_id = _get_staff_department_id(db, current_user)
         if model is Patient:
-            if staff_dept_id is None:
-                return db.query(Patient).filter(false())
-            return (
-                db.query(Patient)
-                .join(Appointment, Appointment.patient_id == Patient.patient_id)
-                .filter(Appointment.dept_id == staff_dept_id)
-                .distinct()
-            )
+            # Staff can view all registered patients; only appointments are department-scoped.
+            return db.query(Patient)
         if model is Appointment:
             if staff_dept_id is None:
                 return db.query(Appointment).filter(false())
@@ -173,26 +187,39 @@ def _build_scoped_query(db: Session, model: type, current_user):
 
 
 def _authorize_create(db: Session, model: type, payload: dict[str, Any], current_user):
-    role = getattr(current_user, "role", None)
-    if role == "Admin":
+    role = _normalized_role(current_user)
+    if role == "admin":
         return
 
-    if model is Patient and role in ("Doctor", "Staff"):
+    if model is Patient and role in ("doctor", "staff"):
         return
 
     if model is Appointment:
-        if role == "Doctor":
+        if role == "doctor":
             if not getattr(current_user, "doctor_id", None):
                 _deny_forbidden("Doctor profile is not linked")
             if payload.get("doctor_id") != current_user.doctor_id:
                 _deny_forbidden("Doctor can only create own appointments")
+
+            doctor_dept_id = _get_doctor_department_id(db, current_user.doctor_id)
+            if doctor_dept_id is None:
+                _deny_forbidden("Doctor profile is not linked to a department")
+            if payload.get("dept_id") != doctor_dept_id:
+                _deny_forbidden("Doctor can only create appointments in own department")
             return
-        if role == "Staff":
+        if role == "staff":
             staff_dept_id = _get_staff_department_id(db, current_user)
             if staff_dept_id is None:
                 _deny_forbidden("Staff profile is not linked to a department")
             if payload.get("dept_id") != staff_dept_id:
                 _deny_forbidden("Staff can only create appointments in own department")
+
+            target_doctor_id = payload.get("doctor_id")
+            doctor_dept_id = _get_doctor_department_id(db, target_doctor_id)
+            if doctor_dept_id is None:
+                raise HTTPException(status_code=400, detail="doctor_id is invalid or not linked to department")
+            if doctor_dept_id != staff_dept_id:
+                _deny_forbidden("Selected doctor does not belong to your department")
             return
         _deny_forbidden()
 
@@ -220,17 +247,32 @@ def _authorize_create(db: Session, model: type, payload: dict[str, Any], current
 
 
 def _authorize_update(db: Session, model: type, payload: dict[str, Any], current_user):
-    role = getattr(current_user, "role", None)
-    if role == "Admin":
+    role = _normalized_role(current_user)
+    if role == "admin":
         return
 
     if model is Appointment:
-        if role == "Doctor" and "doctor_id" in payload and payload["doctor_id"] != current_user.doctor_id:
+        if role == "doctor" and "doctor_id" in payload and payload["doctor_id"] != current_user.doctor_id:
             _deny_forbidden("Doctor can only assign own doctor_id")
-        if role == "Staff" and "dept_id" in payload:
+        if role == "doctor" and "dept_id" in payload:
+            doctor_dept_id = _get_doctor_department_id(db, current_user.doctor_id)
+            if doctor_dept_id is None:
+                _deny_forbidden("Doctor profile is not linked to a department")
+            if payload["dept_id"] != doctor_dept_id:
+                _deny_forbidden("Doctor can only assign own department")
+        if role == "staff" and "dept_id" in payload:
             staff_dept_id = _get_staff_department_id(db, current_user)
             if payload["dept_id"] != staff_dept_id:
                 _deny_forbidden("Staff can only assign own department")
+        if role == "staff" and "doctor_id" in payload:
+            staff_dept_id = _get_staff_department_id(db, current_user)
+            if staff_dept_id is None:
+                _deny_forbidden("Staff profile is not linked to a department")
+            doctor_dept_id = _get_doctor_department_id(db, payload["doctor_id"])
+            if doctor_dept_id is None:
+                raise HTTPException(status_code=400, detail="doctor_id is invalid or not linked to department")
+            if doctor_dept_id != staff_dept_id:
+                _deny_forbidden("Selected doctor does not belong to your department")
         return
 
     if model in (ConsultationBilling, Prescription, PrescribedTest) and "appointment_id" in payload:
