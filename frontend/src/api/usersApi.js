@@ -1,11 +1,11 @@
 import { apiRequest } from "./client";
 
 export function listUsers(token) {
-  return apiRequest("/users", { method: "GET", token });
+  return apiRequest("/users/", { method: "GET", token });
 }
 
 export function createUser(token, payload) {
-  return apiRequest("/users", {
+  return apiRequest("/users/", {
     method: "POST",
     token,
     body: payload,

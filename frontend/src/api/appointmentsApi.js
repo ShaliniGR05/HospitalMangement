@@ -1,11 +1,11 @@
 import { apiRequest } from "./client";
 
 export function listAppointments(token) {
-  return apiRequest("/appointments", { method: "GET", token });
+  return apiRequest("/appointments/", { method: "GET", token });
 }
 
 export function createAppointment(token, payload) {
-  return apiRequest("/appointments", {
+  return apiRequest("/appointments/", {
     method: "POST",
     token,
     body: payload,

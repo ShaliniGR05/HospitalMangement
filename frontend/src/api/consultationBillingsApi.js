@@ -1,11 +1,11 @@
 import { apiRequest } from "./client";
 
 export function listConsultationBillings(token) {
-  return apiRequest("/consultation-billings", { method: "GET", token });
+  return apiRequest("/consultation-billings/", { method: "GET", token });
 }
 
 export function createConsultationBilling(token, payload) {
-  return apiRequest("/consultation-billings", {
+  return apiRequest("/consultation-billings/", {
     method: "POST",
     token,
     body: payload,

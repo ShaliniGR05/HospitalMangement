@@ -1,11 +1,11 @@
 import { apiRequest } from "./client";
 
 export function listPatients(token) {
-  return apiRequest("/patients", { method: "GET", token });
+  return apiRequest("/patients/", { method: "GET", token });
 }
 
 export function createPatient(token, payload) {
-  return apiRequest("/patients", {
+  return apiRequest("/patients/", {
     method: "POST",
     token,
     body: payload,

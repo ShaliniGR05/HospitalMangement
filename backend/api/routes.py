@@ -110,14 +110,7 @@ def _build_scoped_query(db: Session, model: type, current_user):
         doctor_id = getattr(current_user, "doctor_id", None)
         doctor_dept_id = _get_doctor_department_id(db, doctor_id)
         if model is Patient:
-            if not doctor_id:
-                return db.query(Patient).filter(false())
-            return (
-                db.query(Patient)
-                .join(Appointment, Appointment.patient_id == Patient.patient_id)
-                .filter(Appointment.doctor_id == doctor_id)
-                .distinct()
-            )
+            return db.query(Patient)
         if model is Appointment:
             if not doctor_id:
                 return db.query(Appointment).filter(false())
@@ -163,22 +156,13 @@ def _build_scoped_query(db: Session, model: type, current_user):
         return db.query(model).filter(false())
 
     if role == "staff":
-        staff_dept_id = _get_staff_department_id(db, current_user)
         if model is Patient:
             # Staff can view all registered patients; only appointments are department-scoped.
             return db.query(Patient)
         if model is Appointment:
-            if staff_dept_id is None:
-                return db.query(Appointment).filter(false())
-            return db.query(Appointment).filter(Appointment.dept_id == staff_dept_id)
+            return db.query(Appointment)
         if model is ConsultationBilling:
-            if staff_dept_id is None:
-                return db.query(ConsultationBilling).filter(false())
-            return (
-                db.query(ConsultationBilling)
-                .join(Appointment, ConsultationBilling.appointment_id == Appointment.appointment_id)
-                .filter(Appointment.dept_id == staff_dept_id)
-            )
+            return db.query(ConsultationBilling)
         if model in (Department, Doctor, Staff, LabTest, Medicine):
             return db.query(model)
         return db.query(model).filter(false())
