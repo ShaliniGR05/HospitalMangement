@@ -1,0 +1,44 @@
+/* ══════════════════════════════════════════
+   Dashboard Layout
+   ══════════════════════════════════════════ */
+
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(14, 165, 233, 0.04) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(99, 102, 241, 0.03) 0%, transparent 40%),
+    var(--bg-color);
+}
+
+.dashboard-main {
+  flex: 1;
+  margin-left: var(--sidebar-width);
+  transition: margin-left var(--transition-normal);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.dashboard-content {
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+  padding: var(--space-xl);
+  animation: fadeInSlideUp 0.35s ease-out;
+}
+
+/* When sidebar is collapsed */
+.sidebar--collapsed ~ .dashboard-main,
+.dashboard-layout:has(.sidebar--collapsed) .dashboard-main {
+  margin-left: var(--sidebar-collapsed);
+}
+
+@media (max-width: 768px) {
+  .dashboard-main {
+    margin-left: var(--sidebar-collapsed);
+  }
+
+  .dashboard-content {
+    padding: var(--space-md);
+  }
+}

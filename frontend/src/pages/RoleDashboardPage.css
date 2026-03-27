@@ -1,0 +1,115 @@
+.role-page-shell {
+  min-height: 100vh;
+  position: relative;
+  padding: 1rem;
+}
+
+.role-gradient-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 5% 15%, rgba(84, 204, 196, 0.35), transparent 33%),
+    radial-gradient(circle at 94% 0%, rgba(232, 173, 206, 0.28), transparent 28%),
+    linear-gradient(180deg, #f4f7fb 0%, #eef4fb 58%, #e8eef8 100%);
+}
+
+.role-page-content {
+  width: min(1240px, 100%);
+  margin: 0 auto;
+  display: grid;
+  gap: 1rem;
+}
+
+.role-overview-card {
+  border-radius: 20px;
+  border: 1px solid rgba(161, 178, 203, 0.45);
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(10px);
+  padding: 1.25rem;
+}
+
+.role-overview-card h1 {
+  margin-top: 0.25rem;
+  font-size: clamp(1.45rem, 2vw, 2rem);
+}
+
+.role-overview-card p {
+  margin: 0.45rem 0 0;
+  color: #5b6577;
+}
+
+.role-kicker {
+  margin: 0;
+  color: #317f98;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  font-size: 0.73rem;
+  font-weight: 700;
+}
+
+.role-table-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.95rem;
+}
+
+.role-table-card {
+  border: 1px solid rgba(153, 170, 196, 0.34);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  gap: 0.95rem;
+  padding: 0.95rem 1rem;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
+}
+
+.role-table-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(111, 147, 199, 0.58);
+  box-shadow: 0 16px 28px rgba(46, 74, 121, 0.12);
+}
+
+.role-table-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display: inline-grid;
+  place-items: center;
+  font-weight: 700;
+  color: #25616f;
+  background: linear-gradient(145deg, rgba(120, 229, 219, 0.22), rgba(174, 201, 246, 0.28));
+}
+
+.role-table-meta {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.role-table-meta strong {
+  font-size: 0.97rem;
+}
+
+.role-table-meta small {
+  font-size: 0.82rem;
+  color: #607188;
+}
+
+@media (max-width: 1024px) {
+  .role-table-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 660px) {
+  .role-page-shell {
+    padding: 0.8rem;
+  }
+
+  .role-table-grid {
+    grid-template-columns: 1fr;
+  }
+}

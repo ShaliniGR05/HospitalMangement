@@ -57,9 +57,20 @@ function buildPayload(fields, formData, mode) {
 
 function normalizeCellValue(value) {
   if (value === null || value === undefined || value === "") {
-    return "-";
+    return "—";
   }
   return String(value);
+}
+
+const STATUS_VALUES = ["pending", "completed", "cancelled", "paid", "failed", "available", "offline"];
+
+function CellValue({ value }) {
+  const str = normalizeCellValue(value);
+  const lower = str.toLowerCase();
+  if (STATUS_VALUES.includes(lower)) {
+    return <span className={`status-badge status-badge--${lower}`}>{str}</span>;
+  }
+  return <>{str}</>;
 }
 
 function FieldInput({ field, value, onChange }) {
@@ -119,20 +130,21 @@ function FieldInput({ field, value, onChange }) {
   );
 }
 
-function AdminDataManager({ token }) {
-  const [selectedTableKey, setSelectedTableKey] = useState(ADMIN_TABLES[0].key);
+function AdminDataManager({ token, selectedTableKey }) {
   const [rows, setRows] = useState([]);
   const [isLoadingRows, setIsLoadingRows] = useState(false);
   const [error, setError] = useState("");
-  const [createFormData, setCreateFormData] = useState(initialFormState(ADMIN_TABLES[0].fields));
   const [editId, setEditId] = useState(null);
-  const [editFormData, setEditFormData] = useState(initialFormState(ADMIN_TABLES[0].fields));
+  const [editFormData, setEditFormData] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showCreateForm, setShowCreateForm] = useState(false);
 
   const selectedTable = useMemo(
     () => ADMIN_TABLES.find((table) => table.key === selectedTableKey) || ADMIN_TABLES[0],
     [selectedTableKey],
   );
+
+  const [createFormData, setCreateFormData] = useState(initialFormState(selectedTable.fields));
 
   const sortedRows = useMemo(() => {
     const key = selectedTable.primaryKey;
@@ -154,22 +166,12 @@ function AdminDataManager({ token }) {
   }, [selectedTable.endpoint, selectedTable.title, token]);
 
   useEffect(() => {
-    refreshRows();
-  }, [refreshRows]);
-
-  const switchTable = async (tableKey) => {
-    const nextTable = ADMIN_TABLES.find((table) => table.key === tableKey);
-    if (!nextTable) {
-      return;
-    }
-
-    setSelectedTableKey(tableKey);
-    setRows([]);
     setEditId(null);
     setError("");
-    setCreateFormData(initialFormState(nextTable.fields));
-    setEditFormData(initialFormState(nextTable.fields));
-  };
+    setShowCreateForm(false);
+    setCreateFormData(initialFormState(selectedTable.fields));
+    refreshRows();
+  }, [selectedTable, refreshRows]);
 
   const handleCreateChange = (event) => {
     const { name, value } = event.target;
@@ -190,6 +192,7 @@ function AdminDataManager({ token }) {
       const payload = buildPayload(selectedTable.fields, createFormData, "create");
       await createTableRow(token, selectedTable.endpoint, payload);
       setCreateFormData(initialFormState(selectedTable.fields));
+      setShowCreateForm(false);
       await refreshRows();
     } catch (err) {
       setError(err.message || `Could not add ${selectedTable.title}`);
@@ -210,7 +213,7 @@ function AdminDataManager({ token }) {
 
   const cancelEdit = () => {
     setEditId(null);
-    setEditFormData(initialFormState(selectedTable.fields));
+    setEditFormData({});
   };
 
   const saveEdit = async () => {
@@ -224,7 +227,7 @@ function AdminDataManager({ token }) {
       const payload = buildPayload(selectedTable.fields, editFormData, "update");
       await updateTableRow(token, selectedTable.endpoint, editId, payload);
       setEditId(null);
-      setEditFormData(initialFormState(selectedTable.fields));
+      setEditFormData({});
       await refreshRows();
     } catch (err) {
       setError(err.message || `Could not update ${selectedTable.title}`);
@@ -257,55 +260,68 @@ function AdminDataManager({ token }) {
   );
 
   return (
-    <section className="panel-card admin-data-manager">
-      <div className="admin-heading-row">
-        <h2>Admin Data Console</h2>
-        <button type="button" onClick={refreshRows} disabled={isLoadingRows || isSubmitting}>
-          {isLoadingRows ? "Loading..." : "Refresh"}
-        </button>
-      </div>
-
-      <div className="table-card-grid">
-        {ADMIN_TABLES.map((table) => (
+    <section className="data-manager">
+      {/* Header Bar */}
+      <div className="data-manager__header">
+        <div>
+          <h2 className="data-manager__title">{selectedTable.title}</h2>
+          <p className="data-manager__subtitle">
+            {sortedRows.length} record{sortedRows.length !== 1 ? "s" : ""} found
+          </p>
+        </div>
+        <div className="data-manager__actions">
           <button
-            key={table.key}
             type="button"
-            className={`table-card ${table.key === selectedTable.key ? "active" : ""}`}
-            onClick={() => switchTable(table.key)}
+            className="secondary-button"
+            onClick={refreshRows}
+            disabled={isLoadingRows || isSubmitting}
           >
-            <span>{table.title}</span>
+            {isLoadingRows ? "Loading…" : "↻ Refresh"}
           </button>
-        ))}
+          <button
+            type="button"
+            className="primary-button"
+            onClick={() => setShowCreateForm((s) => !s)}
+          >
+            {showCreateForm ? "✕ Close" : "+ Add New"}
+          </button>
+        </div>
       </div>
 
-      <h3 className="table-title">Selected: {selectedTable.title}</h3>
+      {/* Create Form */}
+      {showCreateForm && (
+        <form className="entity-form" onSubmit={handleCreate}>
+          <h3>Add {selectedTable.title}</h3>
+          {selectedTable.fields.map((field) => (
+            <FieldInput
+              key={`create-${field.name}`}
+              field={field}
+              value={createFormData[field.name]}
+              onChange={handleCreateChange}
+            />
+          ))}
+          <button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Saving…" : `Add ${selectedTable.title}`}
+          </button>
+        </form>
+      )}
 
-      <form className="entity-form" onSubmit={handleCreate}>
-        <h3>Add {selectedTable.title}</h3>
-        {selectedTable.fields.map((field) => (
-          <FieldInput
-            key={`create-${field.name}`}
-            field={field}
-            value={createFormData[field.name]}
-            onChange={handleCreateChange}
-          />
-        ))}
-        <button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Saving..." : `Add ${selectedTable.title}`}
-        </button>
-      </form>
+      {error ? <p className="inline-error">⚠ {error}</p> : null}
 
-      {error ? <p className="inline-error">{error}</p> : null}
-
+      {/* Data Table */}
       {isLoadingRows ? (
-        <p>Loading {selectedTable.title}...</p>
+        <div className="skeleton-wrap">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="skeleton skeleton-row" />
+          ))}
+        </div>
       ) : (
         <div className="table-wrap">
           <table>
             <thead>
               <tr>
                 {displayColumns.map((column) => (
-                  <th key={column}>{column}</th>
+                  <th key={column}>{column.replace(/_/g, " ")}</th>
                 ))}
                 <th>Actions</th>
               </tr>
@@ -316,7 +332,9 @@ function AdminDataManager({ token }) {
                 return (
                   <tr key={String(rowId)}>
                     {displayColumns.map((column) => (
-                      <td key={`${rowId}-${column}`}>{normalizeCellValue(row[column])}</td>
+                      <td key={`${rowId}-${column}`}>
+                        <CellValue value={row[column]} />
+                      </td>
                     ))}
                     <td className="row-actions">
                       <button type="button" onClick={() => startEdit(row)}>
@@ -331,7 +349,9 @@ function AdminDataManager({ token }) {
               })}
               {!sortedRows.length ? (
                 <tr>
-                  <td colSpan={displayColumns.length + 1}>No records found.</td>
+                  <td colSpan={displayColumns.length + 1} className="empty-cell">
+                    No records found.
+                  </td>
                 </tr>
               ) : null}
             </tbody>
@@ -339,30 +359,33 @@ function AdminDataManager({ token }) {
         </div>
       )}
 
+      {/* Edit Modal */}
       {editId !== null ? (
-        <section className="edit-box">
-          <h3>
-            Update {selectedTable.title} #{editId}
-          </h3>
-          <div className="edit-grid">
-            {selectedTable.fields.map((field) => (
-              <FieldInput
-                key={`edit-${field.name}`}
-                field={field}
-                value={editFormData[field.name]}
-                onChange={handleEditChange}
-              />
-            ))}
+        <div className="modal-overlay" onClick={cancelEdit}>
+          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+            <h3>
+              ✏️ Edit {selectedTable.title} #{editId}
+            </h3>
+            <div className="modal-form-grid">
+              {selectedTable.fields.map((field) => (
+                <FieldInput
+                  key={`edit-${field.name}`}
+                  field={field}
+                  value={editFormData[field.name]}
+                  onChange={handleEditChange}
+                />
+              ))}
+            </div>
+            <div className="modal-actions">
+              <button type="button" className="btn-cancel" onClick={cancelEdit} disabled={isSubmitting}>
+                Cancel
+              </button>
+              <button type="button" className="btn-save" onClick={saveEdit} disabled={isSubmitting}>
+                {isSubmitting ? "Saving…" : "Save Changes"}
+              </button>
+            </div>
           </div>
-          <div className="edit-actions">
-            <button type="button" onClick={saveEdit} disabled={isSubmitting}>
-              {isSubmitting ? "Saving..." : "Save"}
-            </button>
-            <button type="button" onClick={cancelEdit} disabled={isSubmitting}>
-              Cancel
-            </button>
-          </div>
-        </section>
+        </div>
       ) : null}
     </section>
   );

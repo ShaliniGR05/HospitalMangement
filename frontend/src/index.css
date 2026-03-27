@@ -1,53 +1,92 @@
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@400;500;600;700&display=swap');
 
 :root {
-  /* Dynamic Color Palette */
-  --primary: #0EA5E9; /* Bright vibrant cyan/blue */
+  /* ── Primary Palette ── */
+  --primary: #0EA5E9;
   --primary-dark: #0284C7;
-  --secondary: #6366F1; /* Indigo */
-  
+  --primary-light: #38BDF8;
+  --secondary: #6366F1;
+  --secondary-light: #818CF8;
+
+  /* ── Role Accent Colors ── */
+  --accent-admin: #8B5CF6;
+  --accent-admin-light: #A78BFA;
+  --accent-doctor: #10B981;
+  --accent-doctor-light: #34D399;
+  --accent-staff: #F59E0B;
+  --accent-staff-light: #FBBF24;
+
+  /* ── Ink / Text ── */
   --ink-darkest: #0F172A;
   --ink: #1E293B;
   --ink-soft: #64748B;
   --ink-muted: #94A3B8;
+  --ink-faint: #CBD5E1;
 
-  --bg-color: #F8FAFC;
-  --surface-color: rgba(255, 255, 255, 0.85); /* For glassmorphism */
-  
+  /* ── Surfaces ── */
+  --bg-color: #F1F5F9;
+  --surface-color: rgba(255, 255, 255, 0.82);
+  --surface-solid: #FFFFFF;
+  --sidebar-bg: #0F172A;
+  --sidebar-surface: rgba(255, 255, 255, 0.06);
+  --sidebar-hover: rgba(255, 255, 255, 0.1);
+  --sidebar-active: rgba(255, 255, 255, 0.14);
+
+  /* ── Lines / Borders ── */
   --line: #E2E8F0;
   --line-soft: #F1F5F9;
+  --line-strong: #CBD5E1;
 
+  /* ── Semantic ── */
   --success: #10B981;
+  --success-bg: rgba(16, 185, 129, 0.1);
   --danger: #EF4444;
+  --danger-bg: rgba(239, 68, 68, 0.1);
+  --warning: #F59E0B;
+  --warning-bg: rgba(245, 158, 11, 0.1);
+  --info: #3B82F6;
+  --info-bg: rgba(59, 130, 246, 0.1);
 
-  /* Typography */
+  /* ── Typography ── */
   --heading-font: "Sora", system-ui, sans-serif;
   --body-font: "Manrope", system-ui, sans-serif;
 
-  /* Spacing */
+  /* ── Spacing ── */
   --space-xs: 0.25rem;
   --space-sm: 0.5rem;
   --space-md: 1rem;
   --space-lg: 1.5rem;
-  --space-xl: 2.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
 
-  /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --shadow-glass: 0 25px 50px -12px rgb(0 0 0 / 0.1), inset 0 0 1px 1px rgba(255,255,255,0.2);
+  /* ── Shadows ── */
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.04);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.06);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.06);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.06);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.06);
+  --shadow-glass: 0 8px 32px rgb(0 0 0 / 0.08), inset 0 0 0 1px rgba(255,255,255,0.12);
+  --shadow-glow-primary: 0 0 20px rgba(14, 165, 233, 0.2);
 
-  /* Radius */
+  /* ── Radius ── */
+  --radius-sm: 0.5rem;
   --radius-md: 0.75rem;
-  --radius-lg: 1.25rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
   --radius-full: 9999px;
 
-  /* Transitions */
+  /* ── Transitions ── */
   --transition-fast: 0.15s ease-in-out;
   --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ── Layout ── */
+  --sidebar-width: 260px;
+  --sidebar-collapsed: 72px;
+  --header-height: 64px;
 }
 
-* {
+*, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -56,13 +95,10 @@
 body {
   font-family: var(--body-font);
   color: var(--ink);
-  background: 
-    radial-gradient(circle at top left, rgba(14, 165, 233, 0.08) 0%, transparent 40%),
-    radial-gradient(circle at bottom right, rgba(99, 102, 241, 0.06) 0%, transparent 35%),
-    var(--bg-color);
-  background-attachment: fixed;
+  background: var(--bg-color);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -72,14 +108,61 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1.2;
 }
 
-/* Animations */
+/* ── Scrollbar ── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--ink-muted);
+  border-radius: var(--radius-full);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-soft);
+}
+
+/* ── Animations ── */
 @keyframes fadeInSlideUp {
   0% {
     opacity: 0;
-    transform: translateY(15px);
+    transform: translateY(12px);
   }
   100% {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
 }
